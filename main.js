@@ -1,13 +1,37 @@
 const fileInput = document.getElementById("fileInput");
+const dropZone = document.getElementById("dropZone");
 const metaInfo = document.getElementById("metaInfo");
 const cleanButton = document.getElementById("cleanButton");
 
 let originalImageBlob = null;
 
-fileInput.addEventListener("change", async (e) => {
+// ファイル選択時
+fileInput.addEventListener("change", (e) => {
   const file = e.target.files[0];
-  if (!file) return;
+  if (file) {
+    handleFile(file);
+  }
+});
 
+// ドラッグ＆ドロップ対応
+dropZone.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  dropZone.classList.add("dragover");
+});
+dropZone.addEventListener("dragleave", () => {
+  dropZone.classList.remove("dragover");
+});
+dropZone.addEventListener("drop", (e) => {
+  e.preventDefault();
+  dropZone.classList.remove("dragover");
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    handleFile(file);
+  }
+});
+
+// メタ情報の表示と保存処理の準備
+async function handleFile(file) {
   metaInfo.innerHTML = "<p>メタ情報を解析中...</p>";
   cleanButton.disabled = true;
 
@@ -26,8 +50,9 @@ fileInput.addEventListener("change", async (e) => {
   }
 
   originalImageBlob = file;
-});
+}
 
+// メタ情報を削除して保存
 cleanButton.addEventListener("click", () => {
   if (!originalImageBlob) return;
 

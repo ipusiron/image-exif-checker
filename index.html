@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- 🔍 SEO -->
+  <title>画像Exifチェッカー - Image Exif Checker</title>
+  <meta name="description" content="JPEGやPNG画像に含まれるExifメタ情報をチェックし、必要に応じて削除（クリーニング）できるツールです。画像の個人情報漏洩を防ぎましょう。">
+  <meta name="keywords" content="Exif, メタデータ, 画像, セキュリティ, プライバシー, 画像解析, 個人情報, メタ情報削除, image metadata, privacy, exif cleaner">
+  <meta name="author" content="IPUSIRON">
+
+  <!-- SNS用OGP -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="画像Exifチェッカー - Image Exif Checker">
+  <meta name="twitter:description" content="画像に含まれるExifメタ情報を可視化・削除。SNS投稿前のチェックに最適な無料ツール。">
+  <meta name="twitter:image" content="https://ipusiron.github.io/image-exif-checker/ogp.png">
+
+  <meta property="og:title" content="画像Exifチェッカー - Image Exif Checker">
+  <meta property="og:description" content="画像に含まれるExifメタ情報を可視化・削除。SNS投稿前のチェックに最適な無料ツール。">
+  <meta property="og:image" content="https://ipusiron.github.io/image-exif-checker/ogp.png">
+  <meta property="og:url" content="https://ipusiron.github.io/image-exif-checker/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="画像Exifチェッカー">
+
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+  <h1>画像Exifチェッカー（Image Exif Checker）</h1>
+  <p>JPEGやPNG画像のメタ情報（Exif）を確認・削除できます。</p>
+  <input type="file" id="fileInput" accept="image/jpeg,image/png">
+  <div id="metaInfo"></div>
+  <button id="cleanButton" disabled>メタ情報を削除して保存</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/exifreader@4.12.0/dist/exif-reader.min.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

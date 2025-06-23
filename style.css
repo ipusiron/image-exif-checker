@@ -42,3 +42,9 @@ button:disabled {
   border-color: #3399ff;
   color: #004085;
 }
+
+#filenameInput {
+  padding: 5px;
+  font-size: 1rem;
+  width: 200px;
+}

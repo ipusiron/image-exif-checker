@@ -9,6 +9,18 @@
 
 👉 [https://ipusiron.github.io/image-exif-checker/](https://ipusiron.github.io/image-exif-checker/)
 
+## 📸 スクリーンショット
+
+以下は実際の画面例です。
+
+> ![画像Exifチェッカーの初期画面](ss1.png)
+>
+> *画像Exifチェッカーの初期画面*
+>
+>![テスト用画像ファイル（"test_sensitive"ファイル）のExif情報を表示した](ss2.png)
+>
+> *テスト用画像ファイル（"test_sensitive"ファイル）のExif情報を表示した*
+
 ## 🔍 機能の概要
 
 - **クライアントサイド完結**であるため、画像はアップロードされません。
@@ -53,8 +65,8 @@ const arrayBuffer = await file.arrayBuffer();
 const tags = ExifReader.load(arrayBuffer);
 ```
 
- - *file.arrayBuffer()*によって画像ファイルのバイナリデータを取得
- - *ExifReader.load()*を用いて、Exif領域に含まれる各種タグ（カメラ名、撮影日時、GPS座標など）を抽出
+ - `file.arrayBuffer()`によって画像ファイルのバイナリデータを取得
+ - `ExifReader.load()`を用いて、Exif領域に含まれる各種タグ（カメラ名、撮影日時、GPS座標など）を抽出
 
 抽出されたデータは、descriptionやvalueとしてHTML上に表示され、削除前にどのような個人情報が含まれているかを可視化するために使われます。
 
@@ -95,7 +107,36 @@ canvas.toBlob()による再描画時に画像の再エンコードが行われ�
 
 一部のSNSアプリや画像ビューアでは、Exif情報がキャッシュされていることがあります。削除結果を確認するにはExifビューアなどで再確認をおすすめします。
 
-# 🧠 このツールについて
+以下は、`README.md` に追加する「テスト」セクションの記述例です。
+`test_sensitive.jpg` および `generate_test_exif_image.ipynb` の**簡潔で実用的な使い方説明**を含めています。
+
+
+## ✅ テスト
+
+このツールの動作確認には、以下の**テスト用ファイル**を利用できます。
+"test"フォルダーに配置してあります。
+
+### 🔹 `test_sensitive.jpg`
+
+* 本リポジトリに含まれる、**Exif情報付きのサンプル画像**です。
+* `GPSLatitude`、`DateTimeOriginal`、`Artist` などの**情報漏洩リスクのあるExif項目を含んでいます**。
+
+📌 この画像をツールに読み込ませることで、
+該当項目が**赤色で強調表示**されることを確認できます。
+
+### 🔹 `generate_test_exif_image.ipynb`
+
+* テスト画像を自分で生成したい場合は、この**Jupyter Notebook形式のスクリプト**を使用してください。
+* `Pillow` + `piexif` により、任意のExif情報を含むJPEG画像をローカルまたはColab上で生成できます。
+
+#### 使用手順（Google Colab推奨）：
+
+1. [`generate_test_exif_image.ipynb`](./test/generate_test_exif_image.ipynb) をColabで開く
+2. 各セルを上から順に実行する
+3. 生成された `test_sensitive.jpg` をダウンロードして、本ツールに読み込ませる
+
+
+## 🧠 このツールについて
 
 本ツールは、「生成AIで作るセキュリティツール100」プロジェクトの一環として開発されました。
 

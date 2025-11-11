@@ -4,6 +4,21 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
+    <!-- Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self';
+                   script-src 'self' https://cdn.jsdelivr.net;
+                   style-src 'self';
+                   img-src 'self' blob: data:;
+                   connect-src 'none';
+                   font-src 'self';
+                   object-src 'none';
+                   media-src 'none';
+                   frame-src 'none';
+                   base-uri 'self';
+                   form-action 'none';
+                   frame-ancestors 'none';" />
+
     <!-- 🔍 SEO -->
     <title>画像Exifチェッカー - Image Exif Checker</title>
     <meta
@@ -76,7 +91,9 @@
       </a>
     </p>
     
-    <script src="https://cdn.jsdelivr.net/npm/exifreader@4.12.0/dist/exif-reader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exifreader@4.12.0/dist/exif-reader.min.js"
+            integrity="sha384-VJo1YHT8HkmsAAS/wcvuuXkB85afkNQ12wUadP2Cm/Ni5lJki4w/WqHb1coG6l1L"
+            crossorigin="anonymous"></script>
     <script src="main.js"></script>
   </body>
 </html>

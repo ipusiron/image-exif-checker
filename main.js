@@ -53,17 +53,32 @@ async function handleFile(file) {
   const entries = Object.entries(tags);
 
   if (entries.length === 0) {
-    metaInfo.innerHTML = "<p>メタ情報は見つかりませんでした。</p>";
+    metaInfo.textContent = "メタ情報は見つかりませんでした。";
   } else {
-    metaInfo.innerHTML = "<h3>メタ情報</h3><ul>" +
-      entries.map(([key, val]) => {
-        const isSensitive = sensitiveTags.has(key.toUpperCase());
-        const displayKey = isSensitive
-          ? `<strong style="color:red;">${key}</strong>`
-          : `<strong>${key}</strong>`;
-        const displayValue = val.description || JSON.stringify(val.value);
-        return `<li>${displayKey}: ${displayValue}</li>`;
-      }).join("") + "</ul>";
+    // XSS対策: DOM APIを使用して安全に要素を構築
+    metaInfo.innerHTML = "";
+    const h3 = document.createElement("h3");
+    h3.textContent = "メタ情報";
+    metaInfo.appendChild(h3);
+
+    const ul = document.createElement("ul");
+    entries.forEach(([key, val]) => {
+      const isSensitive = sensitiveTags.has(key.toUpperCase());
+      const li = document.createElement("li");
+
+      const keyStrong = document.createElement("strong");
+      if (isSensitive) {
+        keyStrong.style.color = "red";
+      }
+      keyStrong.textContent = key;
+
+      const displayValue = val.description || JSON.stringify(val.value);
+
+      li.appendChild(keyStrong);
+      li.appendChild(document.createTextNode(": " + displayValue));
+      ul.appendChild(li);
+    });
+    metaInfo.appendChild(ul);
     cleanButton.disabled = false;
   }
 

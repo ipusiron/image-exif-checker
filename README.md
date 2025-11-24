@@ -1,6 +1,41 @@
+<!--
+---
+id: day007
+slug: image-exif-checker
+
+title: "画像Exifチェッカー"
+
+subtitle_ja: "画像に潜む個人情報を可視化・削除"
+subtitle_en: "Visualize and remove hidden metadata from images"
+
+description_ja: "JPEG/PNG画像に含まれるExifメタ情報を確認・削除できるWebツール。位置情報や撮影日時などを可視化し、ボタン1つで除去できます。"
+description_en: "A web tool to check and remove Exif metadata from JPEG/PNG images. Visualizes location data, timestamps, and more, with one-click removal."
+
+category_ja:
+  - フォレンジック
+category_en:
+  - Forensics
+
+difficulty: 1
+
+tags:
+  - exif
+  - metadata
+  - privacy
+  - image
+  - security
+  - metadata analysis
+
+repo_url: "https://github.com/ipusiron/image-exif-checker"
+demo_url: "https://ipusiron.github.io/image-exif-checker/"
+
+hub: true
+---
+-->
+
 # 画像Exifチェッカー（Image Exif Checker）
 
-**Day 7 - 生成AIで作るセキュリティツール100**
+**Day007 - 生成AIで作るセキュリティツール100**
 
 **画像Exifチェッカー**は、JPEG/PNG画像に含まれるExifメタ情報を確認・削除できるWebツールです。  
 画像に含まれる位置情報や撮影日時などを可視化し、ボタン1つで除去できます。

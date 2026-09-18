@@ -7,7 +7,7 @@
     <!-- Content Security Policy -->
     <meta http-equiv="Content-Security-Policy"
           content="default-src 'self';
-                   script-src 'self' https://cdn.jsdelivr.net;
+                   script-src 'self';
                    style-src 'self';
                    img-src 'self' blob: data:;
                    connect-src 'none';
@@ -16,8 +16,8 @@
                    media-src 'none';
                    frame-src 'none';
                    base-uri 'self';
-                   form-action 'none';
-                   frame-ancestors 'none';" />
+                   form-action 'none';" />
+    <meta name="referrer" content="no-referrer" />
 
     <!-- 🔍 SEO -->
     <title>画像Exifチェッカー - Image Exif Checker</title>
@@ -66,34 +66,48 @@
     <meta property="og:site_name" content="画像Exifチェッカー" />
 
     <link rel="stylesheet" href="style.css" />
-    <link rel="icon" href="favicon.ico" type="image/x-icon" />
   </head>
   <body>
+    <main>
     <h1>画像Exifチェッカー（Image Exif Checker）</h1>
     <p>JPEGやPNG画像のメタ情報（Exif）を確認・削除できます。</p>
 
-    <div id="dropZone" class="drop-zone">ここに画像をドラッグ＆ドロップ</div>
-    <p>または、下からファイルを選択：</p>
+    <div id="dropZone" class="drop-zone" role="button" tabindex="0">ここに画像をタップまたはドラッグ＆ドロップ</div>
+    <p><label for="fileInput">または、下からファイルを選択</label></p>
     <input type="file" id="fileInput" accept="image/jpeg,image/png" />
-    <div id="metaInfo"></div>
-    <button id="cleanButton" disabled>メタ情報を削除して保存</button>
+    <div id="metaInfo" aria-live="polite"></div>
+    <fieldset id="cleaningModes">
+      <legend>削除方式</legend>
+      <label class="method-option">
+        <input type="radio" name="cleanMethod" value="lossless" checked />
+        <span>無劣化（バイナリ除去）<small>画質を落とさずメタ情報だけを取り除く</small></span>
+      </label>
+      <label class="method-option">
+        <input type="radio" name="cleanMethod" value="reencode" />
+        <span>完全再エンコード<small>画像を描き直して保存する。JPEGはわずかに劣化する</small></span>
+      </label>
+    </fieldset>
 
-    </p>
-    <p>保存するファイル名（拡張子は自動付与）：
+    <p class="filename-row"><label for="filenameInput">保存するファイル名（拡張子は自動付与）</label>
       <input type="text"  id="filenameInput" placeholder="ファイル名のみ入力" value="">
       <span id="fileExtensionLabel">.jpg</span>
     </p>
+    <button id="cleanButton" type="button" disabled>メタ情報を削除して保存</button>
+    <p id="resultInfo" role="status" aria-live="polite"></p>
+    <p class="notice">ICCプロファイルも除去するため、広色域の画像では色味が変わることがあります。</p>
+    <p class="notice">すべての隠し情報の消去は保証しません。無劣化ではJPEGのSOS以降を保持し、再エンコードでも画素内の隠し情報が残る場合があります。</p>
+    <noscript>このツールの利用にはJavaScriptが必要です。</noscript>
 
     <hr>
-    <p style="margin-top: 2em; font-size: 0.9em; text-align: center;">
+    <p class="site-footer">
       🔗 <a href="https://github.com/ipusiron/image-exif-checker" target="_blank" rel="noopener noreferrer">
-        GitHubリポジトリはこちら（ipusiron/image-exif-checker）
+        GitHubリポジトリーはこちら（ipusiron/image-exif-checker）
       </a>
     </p>
     
-    <script src="https://cdn.jsdelivr.net/npm/exifreader@4.12.0/dist/exif-reader.min.js"
-            integrity="sha384-VJo1YHT8HkmsAAS/wcvuuXkB85afkNQ12wUadP2Cm/Ni5lJki4w/WqHb1coG6l1L"
-            crossorigin="anonymous"></script>
-    <script src="main.js"></script>
+    </main>
+    <script src="vendor/exifreader/exif-reader.min.js" defer></script>
+    <script src="exif-logic.js" defer></script>
+    <script src="main.js" defer></script>
   </body>
 </html>

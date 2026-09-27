@@ -4,9 +4,9 @@ const fs = require("node:fs");
 const path = require("node:path");
 const root = path.join(__dirname, "..");
 // Third-party minified vendor files are intentionally excluded.
-const files = ["exif-logic.js", "main.js", "style.css", "index.html",
+const files = ["exif-logic.js", "i18n.js", "main.js", "style.css", "index.html",
   ...fs.readdirSync(__dirname).filter(name => name.endsWith(".test.js")).map(name => "test/" + name)];
-const minimum = { "exif-logic.js": 150, "main.js": 150, "style.css": 100, "index.html": 90 };
+const minimum = { "exif-logic.js": 150, "i18n.js": 120, "main.js": 150, "style.css": 100, "index.html": 90 };
 for (const file of files) {
   test("readable multi-line formatting: " + file, () => {
     const lines = fs.readFileSync(path.join(root, file), "utf8").trimEnd().split(/\r?\n/);

@@ -17,8 +17,8 @@ test("CSP: self-hosted scripts, no ineffective meta frame-ancestors or unsafe-in
 test("HTML: no inline handlers/styles, external scripts, modules or missing favicon", () => {
   assert.doesNotMatch(html, /\son[a-z]+\s*=|\sstyle\s*=|type=["']module["']|href=["']favicon\.ico/i);
   const scripts = [...html.matchAll(/<script\b[^>]*>/g)].map(match => match[0]);
-  assert.equal(scripts.length, 3);
-  ["vendor/exifreader/exif-reader.min.js", "exif-logic.js", "main.js"].forEach((src, index) => {
+  assert.equal(scripts.length, 4);
+  ["i18n.js", "vendor/exifreader/exif-reader.min.js", "exif-logic.js", "main.js"].forEach((src, index) => {
     assert.ok(scripts[index].includes('src="' + src + '"'));
     assert.match(scripts[index], /\sdefer(?:\s|>)/);
   });
@@ -41,17 +41,18 @@ test("HTML: required ids are unique, labels and live regions are associated", ()
   for (const id of ["dropZone", "fileInput", "metaInfo", "cleanButton", "filenameInput", "fileExtensionLabel"]) {
     assert.ok(ids.includes(id), id);
   }
-  assert.match(html, /<label for="fileInput">/);
-  assert.match(html, /<label for="filenameInput">/);
+  assert.match(html, /<label for="fileInput"[^>]*>/);
+  assert.match(html, /<label for="filenameInput"[^>]*>/);
   assert.match(html, /id="metaInfo"[^>]*aria-live="polite"/);
   assert.match(html, /id="dropZone"[^>]*role="button"[^>]*tabindex="0"/);
 });
 test("HTML: lossless default in fieldset, main and footer exist", () => {
-  assert.match(html, /<fieldset[^>]*>[\s\S]*?<legend>削除方式<\/legend>/);
+  assert.match(html, /<fieldset[^>]*>[\s\S]*?<legend[^>]*>削除方式<\/legend>/);
   const radios = [...html.matchAll(/<input\b[^>]*type="radio"[^>]*>/g)].map(match => match[0]);
   assert.equal(radios.length, 2);
   assert.ok(radios.find(tag => tag.includes('value="lossless"')).includes("checked"));
   assert.match(html, /<main>/);
+  assert.match(html, /id="langToggle"[^>]*type="button"/);
   assert.match(html, /class="site-footer"/);
   assert.match(html, /href="https:\/\/github.com\/ipusiron\/image-exif-checker"/);
 });

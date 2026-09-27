@@ -46,25 +46,36 @@ for (const key of ["Image Width", "Bits Per Sample", "Exif IFD Pointer", "GPS In
   test("not sensitive: " + key, () => assert.equal(logic.isSensitiveTag(key), false));
 }
 
+// 表示できない値と省略は、文言ではなく文言キーで返す。訳は表示の直前に行う。
+const unavailable = { key: "value.unavailable" };
 for (const [name, value, expected] of [
-  ["description takes precedence", { description: "Tokyo", value: 1 }, "Tokyo"],
-  ["Thumbnail has no value", { description: undefined }, "（値を表示できません）"],
-  ["undefined tag", undefined, "（値を表示できません）"],
-  ["array value", { value: [1, 2] }, "[1,2]"],
-  ["object value", { value: { x: 1 } }, '{"x":1}'],
-  ["number description falls back", { description: 5, value: 0 }, "0"],
-  ["blank description falls back", { description: " ", value: false }, "false"],
-  ["control characters", { description: "A\u0000\t\n\r\u001fB" }, "AB"],
-  ["200 characters", { value: "x".repeat(200) }, "x".repeat(200)],
-  ["201 characters", { value: "x".repeat(201) }, "x".repeat(200) + "…（全 201 文字）"],
-  ["code points", { value: "😀".repeat(201) }, "😀".repeat(200) + "…（全 201 文字）"]
+  ["description takes precedence", { description: "Tokyo", value: 1 }, { text: "Tokyo" }],
+  ["Thumbnail has no value", { description: undefined }, unavailable],
+  ["undefined tag", undefined, unavailable],
+  ["array value", { value: [1, 2] }, { text: "[1,2]" }],
+  ["object value", { value: { x: 1 } }, { text: '{"x":1}' }],
+  ["number description falls back", { description: 5, value: 0 }, { text: "0" }],
+  ["blank description falls back", { description: " ", value: false }, { text: "false" }],
+  ["control characters", { description: "A\u0000\t\n\r\u001fB" }, { text: "AB" }],
+  ["200 characters", { value: "x".repeat(200) }, { text: "x".repeat(200) }],
+  ["201 characters", { value: "x".repeat(201) },
+    { text: "x".repeat(200), key: "value.truncated", values: { count: 201 } }],
+  ["code points", { value: "😀".repeat(201) },
+    { text: "😀".repeat(200), key: "value.truncated", values: { count: 201 } }]
 ]) {
-  test("formatTagValue: " + name, () => assert.equal(logic.formatTagValue(value), expected));
+  test("formatTagValue: " + name, () => assert.deepEqual(logic.formatTagValue(value), expected));
 }
 test("formatTagValue: circular object cannot crash rendering", () => {
   const value = {};
   value.self = value;
-  assert.equal(logic.formatTagValue({ value }), "（値を表示できません）");
+  assert.deepEqual(logic.formatTagValue({ value }), unavailable);
+});
+test("failures carry a code, not a display message", () => {
+  assert.deepEqual(logic.ERROR_CODES,
+    { unsupportedFormat: "unsupported-format", invalidStructure: "invalid-structure", stripMismatch: "strip-mismatch" });
+  assert.throws(() => logic.extensionForFormat("webp"), error => error.code === "unsupported-format");
+  assert.throws(() => logic.stripJpegMetadata(Uint8Array.from([1, 2, 3])),
+    error => error.code === "invalid-structure");
 });
 test("countSensitiveTags: count tag names, not values", () => {
   assert.equal(logic.countSensitiveTags({ GPSLatitudeRef: {}, Thumbnail: {}, "Image Width": {} }), 2);
@@ -95,5 +106,5 @@ test("classic script exposes all functions without DOM or ExifReader", () => {
   const context = vm.createContext({});
   vm.runInContext(fs.readFileSync(path.join(__dirname, "../exif-logic.js"), "utf8"), context);
   assert.deepEqual(Object.keys(context.ExifLogic).sort(), Object.keys(logic).sort());
-  assert.equal(Object.keys(logic).length, 14);
+  assert.equal(Object.keys(logic).length, 15);
 });

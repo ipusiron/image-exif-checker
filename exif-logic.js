@@ -1,6 +1,19 @@
 /* DOMやExifReaderに依存しない、表示とバイナリ処理。 */
+/* 文言は持たない。表示は文言キー、失敗はエラーコードで返し、訳は呼び出し側で行う。 */
 const ExifLogic = (() => {
   const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+  const ERROR_CODES = {
+    unsupportedFormat: "unsupported-format",
+    invalidStructure: "invalid-structure",
+    stripMismatch: "strip-mismatch"
+  };
+
+  function logicError(code) {
+    const error = new Error(code);
+    error.code = code;
+    return error;
+  }
+
   const SENSITIVE_TAGS = new Set([
     // 位置
     "GPSLATITUDE", "GPSLATITUDEREF", "GPSLONGITUDE", "GPSLONGITUDEREF",
@@ -39,6 +52,7 @@ const ExifLogic = (() => {
     return SENSITIVE_TAGS.has(normalizeTagKey(key));
   }
 
+  /** 表示用の記述を返す。{ text, key, values } で、key は呼び出し側が訳して text に続ける。 */
   function formatTagValue(tag) {
     let value;
     if (typeof tag?.description === "string" && tag.description.trim()) {
@@ -50,10 +64,13 @@ const ExifLogic = (() => {
         // 循環参照など、表示できない値も画面全体の解析を止めない。
       }
     }
-    if (typeof value !== "string") return "（値を表示できません）";
+    if (typeof value !== "string") return { key: "value.unavailable" };
     const chars = Array.from(value.replace(/[\u0000-\u001f]/g, ""));
-    if (!chars.length) return "（値を表示できません）";
-    return chars.length > 200 ? chars.slice(0, 200).join("") + "…（全 " + chars.length + " 文字）" : chars.join("");
+    if (!chars.length) return { key: "value.unavailable" };
+    if (chars.length > 200) {
+      return { text: chars.slice(0, 200).join(""), key: "value.truncated", values: { count: chars.length } };
+    }
+    return { text: chars.join("") };
   }
 
   function countSensitiveTags(tags) {
@@ -68,7 +85,7 @@ const ExifLogic = (() => {
   function extensionForFormat(format) {
     if (format === "jpeg") return ".jpg";
     if (format === "png") return ".png";
-    throw new Error("未対応の画像形式です。");
+    throw logicError(ERROR_CODES.unsupportedFormat);
   }
 
   function mimeForFormat(format) {
@@ -84,7 +101,7 @@ const ExifLogic = (() => {
   }
 
   function invalidImage() {
-    throw new Error("画像の構造が壊れています。");
+    throw logicError(ERROR_CODES.invalidStructure);
   }
 
   /** JPEGのヘッダーだけを読む。SOSの後は解釈せず、残りを1つの範囲として保持する。 */
@@ -170,13 +187,13 @@ const ExifLogic = (() => {
   function stripMetadata(bytes, format = detectImageFormat(bytes)) {
     if (format === "jpeg") return stripJpegMetadata(bytes);
     if (format === "png") return stripPngMetadata(bytes);
-    throw new Error("未対応の画像形式です。");
+    throw logicError(ERROR_CODES.unsupportedFormat);
   }
 
   function summarizeStrip(before, after, format) {
     const expected = stripMetadata(before, format);
     if (expected.length !== after.length || expected.some((byte, index) => byte !== after[index])) {
-      throw new Error("除去結果が一致しません。");
+      throw logicError(ERROR_CODES.stripMismatch);
     }
     const parts = format === "jpeg" ? jpegParts(before) : pngParts(before);
     const removed = new Map();
@@ -190,7 +207,7 @@ const ExifLogic = (() => {
   }
 
   return {
-    detectImageFormat, normalizeTagKey, isSensitiveTag, SENSITIVE_TAGS, formatTagValue,
+    ERROR_CODES, detectImageFormat, normalizeTagKey, isSensitiveTag, SENSITIVE_TAGS, formatTagValue,
     countSensitiveTags, sanitizeFileName, buildDownloadName, extensionForFormat, mimeForFormat,
     stripJpegMetadata, stripPngMetadata, stripMetadata, summarizeStrip
   };

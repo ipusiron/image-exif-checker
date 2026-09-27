@@ -35,6 +35,8 @@ hub: true
 
 # 画像Exifチェッカー（Image Exif Checker）
 
+[English](README.en.md) · 日本語
+
 ![GitHub Repo stars](https://img.shields.io/github/stars/ipusiron/image-exif-checker?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/ipusiron/image-exif-checker?style=social)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ipusiron/image-exif-checker)
@@ -92,6 +94,7 @@ hub: true
 - 機微タグの件数表示と、位置情報、日時、機材、著作者、サムネイルの強調
 - 無劣化除去と完全再エンコードの選択、除去後の再検証
 - ライト／ダーク、キーボード操作、モバイル表示への対応
+- 日本語・英語の切り替え。`?lang=ja`と`?lang=en`での直接指定にも対応
 
 ### 対応形式
 
@@ -106,11 +109,13 @@ hub: true
 4. 「メタ情報を削除して保存」を押し、結果と保存された画像を確認する。
 
 ドロップゾーンはTabで選択し、EnterまたはSpaceでも開けます。
-壊れた画像や未対応形式は日本語のエラーを表示し、続けて別のファイルを選択できます。
+壊れた画像や未対応形式は表示中の言語でエラーを表示し、続けて別のファイルを選択できます。
 同じファイルを選び直した場合も再解析します。
+見出し横のボタンで日本語と英語を切り替えられます。解析結果を表示している途中でも、内容は消えずその場で訳し直します。
 
 ## 📐 画面構成
 
+- 見出し横：日本語と英語の切り替えボタン
 - 上部：ドロップゾーンとファイル選択
 - 中央：機微タグの件数とメタ情報の一覧
 - 下部：削除方式、ファイル名、保存ボタン、除去結果と再検証結果
@@ -167,6 +172,7 @@ const tags = ExifReader.load(arrayBuffer);
 
 抽出されたデータは、descriptionやvalueとしてHTML上に表示され、削除前にどのような個人情報が含まれているかを可視化するために使われます。
 タグ名は英数字以外を取り除いて大文字化し、一覧と比較します。
+`Make`、`Model`、`GPSLatitude`、`DateTimeOriginal`などのExifタグ名は規格上の固有名詞なので、どちらの言語でも訳さずそのまま表示します。訳すのは画面の文言だけです。
 値を表示できないタグは「（値を表示できません）」と表示し、制御文字を除き、200文字を超える値は文字数を添えて省略します。
 
 ### 🧹 機微タグとして強調する主な情報
@@ -205,7 +211,8 @@ PNGは`image/png`で保存し、品質引数は渡しません。
 
 ## 🔒 セキュリティ
 
-画像はブラウザー内で処理し、外部APIやCDNへの送信、localStorageやCookieへの保存は行いません。
+画像はブラウザー内で処理し、外部APIやCDNへの送信は行いません。
+localStorageに保存するのは言語の選択（`image-exif-checker-language`）だけです。画像とメタ情報は保存せず、Cookieも使いません。
 値は`textContent`または`createTextNode`で表示します。
 
 ```text
@@ -244,6 +251,7 @@ npm test
 Node 22以上の`node --test`を使い、npm依存のインストールは不要です。
 GitHub Actionsでもpushとpull_requestのたびに実行します。
 機微タグ、表示値、ファイル名、バイト単位の除去結果、HTML、配色、整形、READMEの表の数値と画像参照を検証します。
+日英の辞書については、キーの集合と差し込みの一致、HTMLとスクリプトが指すキーの存在、英語辞書の訳し忘れを検証します。
 
 このツールの動作確認には、以下の**テスト用ファイル**を利用できます。
 "test"フォルダーに配置してあります。
@@ -291,6 +299,7 @@ PNG入力はPNGで保存します。JPEGへ自動変換しません。
 ```text
 image-exif-checker/
 ├── index.html                 # 入力と結果の画面、CSP
+├── i18n.js                    # 日英の辞書と切り替え
 ├── exif-logic.js              # 判定、表示整形、無劣化除去
 ├── main.js                    # DOM、ExifReader、Canvasと保存
 ├── style.css                  # 配色、モバイル、ダークモード
@@ -303,10 +312,12 @@ image-exif-checker/
 │   ├── contrast.test.js        # ライト／ダークのコントラスト
 │   ├── readme.test.js          # YAML、表、画像、Notebook
 │   ├── format.test.js          # 行長と読みやすい整形
+│   ├── i18n.test.js            # 辞書とHTMLの対応、訳し忘れ
 │   ├── test_sensitive.jpg      # 固定サンプル画像
 │   └── generate_test_exif_image.ipynb # 画像生成Notebook
 ├── .github/workflows/test.yml # Node 22の自動テスト
 ├── package.json               # npm testの定義
+├── README.md / README.en.md   # 日本語版と英語版の説明
 ├── CLAUDE.md                  # 開発時の決め事
 ├── LICENSE                    # MITライセンス
 ├── ss1.png / ss2.png           # 旧スクリーンショット（保存）

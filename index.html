@@ -23,11 +23,13 @@
     <title>画像Exifチェッカー - Image Exif Checker</title>
     <meta
       name="description"
+      data-i18n-content="app.description"
       content="JPEGやPNG画像に含まれるExifメタ情報をチェックし、必要に応じて削除（クリーニング）できるツールです。画像の個人情報漏洩を防ぎましょう。"
     />
     <meta
       name="keywords"
-      content="Exif, メタデータ, 画像, セキュリティ, プライバシー, 画像解析, 個人情報, メタ情報削除, image metadata, privacy, exif cleaner"
+      data-i18n-content="app.keywords"
+      content="Exif, メタデータ, 画像, セキュリティ, プライバシー, 画像解析, 個人情報, メタ情報削除"
     />
     <meta name="author" content="IPUSIRON" />
 
@@ -35,10 +37,12 @@
     <meta name="twitter:card" content="summary_large_image" />
     <meta
       name="twitter:title"
+      data-i18n-content="app.title"
       content="画像Exifチェッカー - Image Exif Checker"
     />
     <meta
       name="twitter:description"
+      data-i18n-content="app.ogDescription"
       content="画像に含まれるExifメタ情報を可視化・削除。SNS投稿前のチェックに最適な無料ツール。"
     />
     <meta
@@ -48,10 +52,12 @@
 
     <meta
       property="og:title"
+      data-i18n-content="app.title"
       content="画像Exifチェッカー - Image Exif Checker"
     />
     <meta
       property="og:description"
+      data-i18n-content="app.ogDescription"
       content="画像に含まれるExifメタ情報を可視化・削除。SNS投稿前のチェックに最適な無料ツール。"
     />
     <meta
@@ -63,49 +69,66 @@
       content="https://ipusiron.github.io/image-exif-checker/"
     />
     <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="画像Exifチェッカー" />
+    <meta
+      property="og:site_name"
+      data-i18n-content="app.siteName"
+      content="画像Exifチェッカー"
+    />
 
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <main>
-    <h1>画像Exifチェッカー（Image Exif Checker）</h1>
-    <p>JPEGやPNG画像のメタ情報（Exif）を確認・削除できます。</p>
+    <div class="page-header">
+      <h1 data-i18n="app.heading">画像Exifチェッカー（Image Exif Checker）</h1>
+      <button id="langToggle" class="lang-button" type="button"
+              data-i18n="app.langButton"
+              data-i18n-aria-label="app.langAria"
+              aria-label="言語を切り替える">English</button>
+    </div>
+    <p data-i18n="app.lead">JPEGやPNG画像のメタ情報（Exif）を確認・削除できます。</p>
 
-    <div id="dropZone" class="drop-zone" role="button" tabindex="0">ここに画像をタップまたはドラッグ＆ドロップ</div>
-    <p><label for="fileInput">または、下からファイルを選択</label></p>
+    <div id="dropZone" class="drop-zone" role="button" tabindex="0"
+         data-i18n="drop.label">ここに画像をタップまたはドラッグ＆ドロップ</div>
+    <p><label for="fileInput" data-i18n="file.label">または、下からファイルを選択</label></p>
     <input type="file" id="fileInput" accept="image/jpeg,image/png" />
     <div id="metaInfo" aria-live="polite"></div>
     <fieldset id="cleaningModes">
-      <legend>削除方式</legend>
+      <legend data-i18n="method.legend">削除方式</legend>
       <label class="method-option">
         <input type="radio" name="cleanMethod" value="lossless" checked />
-        <span>無劣化（バイナリ除去）<small>画質を落とさずメタ情報だけを取り除く</small></span>
+        <span><span data-i18n="method.lossless">無劣化（バイナリ除去）</span><small
+          data-i18n="method.losslessHint">画質を落とさずメタ情報だけを取り除く</small></span>
       </label>
       <label class="method-option">
         <input type="radio" name="cleanMethod" value="reencode" />
-        <span>完全再エンコード<small>画像を描き直して保存する。JPEGはわずかに劣化する</small></span>
+        <span><span data-i18n="method.reencode">完全再エンコード</span><small
+          data-i18n="method.reencodeHint">画像を描き直して保存する。JPEGはわずかに劣化する</small></span>
       </label>
     </fieldset>
 
-    <p class="filename-row"><label for="filenameInput">保存するファイル名（拡張子は自動付与）</label>
-      <input type="text"  id="filenameInput" placeholder="ファイル名のみ入力" value="">
+    <p class="filename-row"><label for="filenameInput"
+        data-i18n="filename.label">保存するファイル名（拡張子は自動付与）</label>
+      <input type="text"  id="filenameInput"
+             data-i18n-placeholder="filename.placeholder" placeholder="ファイル名のみ入力" value="">
       <span id="fileExtensionLabel">.jpg</span>
     </p>
-    <button id="cleanButton" type="button" disabled>メタ情報を削除して保存</button>
+    <button id="cleanButton" type="button" disabled
+            data-i18n="clean.button">メタ情報を削除して保存</button>
     <p id="resultInfo" role="status" aria-live="polite"></p>
-    <p class="notice">ICCプロファイルも除去するため、広色域の画像では色味が変わることがあります。</p>
-    <p class="notice">すべての隠し情報の消去は保証しません。無劣化ではJPEGのSOS以降を保持し、再エンコードでも画素内の隠し情報が残る場合があります。</p>
-    <noscript>このツールの利用にはJavaScriptが必要です。</noscript>
+    <p class="notice"
+       data-i18n="notice.icc">ICCプロファイルも除去するため、広色域の画像では色味が変わることがあります。</p>
+    <p class="notice" data-i18n="notice.hidden">すべての隠し情報の消去は保証しません。無劣化ではJPEGのSOS以降を保持し、再エンコードでも画素内の隠し情報が残る場合があります。</p>
+    <noscript>This tool requires JavaScript. / このツールの利用にはJavaScriptが必要です。</noscript>
 
     <hr>
     <p class="site-footer">
-      🔗 <a href="https://github.com/ipusiron/image-exif-checker" target="_blank" rel="noopener noreferrer">
-        GitHubリポジトリーはこちら（ipusiron/image-exif-checker）
-      </a>
+      🔗 <a href="https://github.com/ipusiron/image-exif-checker" target="_blank" rel="noopener noreferrer"
+            data-i18n="footer.repo">GitHubリポジトリーはこちら（ipusiron/image-exif-checker）</a>
     </p>
-    
+
     </main>
+    <script src="i18n.js" defer></script>
     <script src="vendor/exifreader/exif-reader.min.js" defer></script>
     <script src="exif-logic.js" defer></script>
     <script src="main.js" defer></script>

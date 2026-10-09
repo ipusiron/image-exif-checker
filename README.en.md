@@ -87,6 +87,14 @@ The button next to the heading switches between Japanese and English. A result a
 
 ## 🎯 Use cases
 
+Ways of using this tool in particular
+
+- Spotting a mismatch between the extension and the content (a lesson on file signatures): this tool decides the format from the leading bytes, not from the extension. JPEG starts with `FF D8 FF` and PNG with `89 50 4E 47 0D 0A 1A 0A`. An image named `photo.png` whose content is JPEG is saved as `photo.png.jpg`, so a file that was only renamed stands out. Check other formats with [MagicSign Inspector](https://ipusiron.github.io/magic-sign-inspector/) (Day040)
+- Making a copy for publication without changing the image quality: people who publish photos for a library, a museum or a PR team make a copy that removes only the metadata segments, without recompressing. In the fixed sample, 309 of 2,818 bytes (11.0%) are removed, and the image data itself is left as it is
+- Counting what remains in a photo you received: journalists and researchers check whether a supplied photo still carries the capture time, the camera model or the location. In the fixed sample, 11 of its 18 tags are highlighted as sensitive. If they remain, they are a lead for checking the place and time of the shot with [WhereShot](https://ipusiron.github.io/whereshot/) (Day013) (if they are gone, that alone does not prove editing; the service or app used for posting may remove them)
+
+General uses
+
 - Checking the location and the capture time before a post goes public
 - Removing the author, the equipment and the embedded thumbnail before sharing a photo
 - Learning how Exif and the PNG text chunks affect privacy

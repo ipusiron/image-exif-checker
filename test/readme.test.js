@@ -97,3 +97,23 @@ test("Vendor: exact ExifReader 4.12.0 distribution and MPL-2.0 license", () => {
   for (const text of ["4.12.0", "MPL-2.0", "https://cdn.jsdelivr.net/npm/exifreader@4.12.0/dist/exif-reader.min.js",
     "https://github.com/mattiasw/ExifReader", "SHA-384", "SHA-256"]) assert.ok(credit.includes(text), text);
 });
+
+test("README: numbers in the tool-specific use cases are recomputed (ja/en)", () => {
+  const readmeEn = fs.readFileSync(path.join(root, "README.en.md"), "utf8");
+  assert.equal(logic.detectImageFormat(Uint8Array.from([0xff, 0xd8, 0xff])), "jpeg");
+  assert.equal(logic.detectImageFormat(Uint8Array.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])), "png");
+  for (const text of [readme, readmeEn]) assert.ok(text.includes("`FF D8 FF`") && text.includes("`89 50 4E 47 0D 0A 1A 0A`"));
+  assert.equal(logic.buildDownloadName("photo.png", "jpeg"), "photo.png.jpg");
+  for (const text of [readme, readmeEn]) assert.ok(text.includes("`photo.png`") && text.includes("`photo.png.jpg`"));
+  const before = fs.readFileSync(path.join(__dirname, "test_sensitive.jpg"));
+  const removed = before.length - logic.stripJpegMetadata(before).length;
+  const pct = (removed / before.length * 100).toFixed(1);
+  assert.deepEqual([before.length, removed, pct], [2818, 309, "11.0"]);
+  assert.ok(readme.includes(`2,818バイトのうち309バイト（${pct}%）が除かれ`));
+  assert.ok(readmeEn.includes(`309 of 2,818 bytes (${pct}%) are removed`));
+  const data = reader.load(before.buffer.slice(before.byteOffset, before.byteOffset + before.byteLength));
+  const [all, sensitive] = [Object.keys(data).length, logic.countSensitiveTags(data)];
+  assert.deepEqual([all, sensitive], [18, 11]);
+  assert.ok(readme.includes(`${all}個のタグのうち${sensitive}個が機微タグ`));
+  assert.ok(readmeEn.includes(`${sensitive} of its ${all} tags are highlighted as sensitive`));
+});
